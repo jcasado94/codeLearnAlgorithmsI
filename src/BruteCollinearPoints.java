@@ -7,12 +7,13 @@ import java.util.ArrayList;
 public class BruteCollinearPoints {
 
     private ArrayList<LineSegment> lineSegments = new ArrayList<>();
-    private ArrayList<Double>[] checkedSlopes;
+    private ArrayList< ArrayList<Double> > checkedSlopes;
 
     public BruteCollinearPoints(Point[] points) {
 
         if (points == null) throw new java.lang.IllegalArgumentException();
-        checkedSlopes = new ArrayList[points.length];
+        checkedSlopes = new ArrayList< ArrayList<Double> >(points.length);
+        for (int i = 0; i < points.length; i++) this.checkedSlopes.add(null);
 
         for (int i = 0; i < points.length; i++) {
 
@@ -84,15 +85,15 @@ public class BruteCollinearPoints {
 
     private boolean hasSlope(int i, double slope) {
 
-        if (checkedSlopes[i] == null) return false;
-        return checkedSlopes[i].contains(slope);
+        if (checkedSlopes.get(i) == null) return false;
+        return checkedSlopes.get(i).contains(slope);
 
     }
 
     private void addSlope(int i, double slope) {
-        if (checkedSlopes[i] == null) checkedSlopes[i] = new ArrayList<>();
+        if (checkedSlopes.get(i) == null) checkedSlopes.set(i, new ArrayList<>());
         if (slope == -0.0) slope = 0.0;
-        checkedSlopes[i].add(slope);
+        checkedSlopes.get(i).add(slope);
     }
 
 }

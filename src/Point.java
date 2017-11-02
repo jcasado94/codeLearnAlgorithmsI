@@ -111,7 +111,7 @@ public class Point implements Comparable<Point> {
         /* YOUR CODE HERE */
     }
 
-    class PointComparator implements Comparator<Point> {
+    private class PointComparator implements Comparator<Point> {
 
         private Point invokingPoint;
 

@@ -1,11 +1,8 @@
 /**
  * Created by josepcasado on 26/10/2017.
  */
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.stream.Collectors;
 
 public class FastCollinearPoints {
 
@@ -23,7 +20,7 @@ public class FastCollinearPoints {
     private ArrayList<LineSegment> lineSegments = new ArrayList<>();
 
     // given the point id (position in @points) keeps a list with all the slopes of lineSegments that "contain" it.
-    private ArrayList<Double>[] checkedSlopes;
+    private ArrayList< ArrayList<Double> > checkedSlopes;
 
     public FastCollinearPoints(Point[] points) {
 
@@ -32,7 +29,8 @@ public class FastCollinearPoints {
         this.points = new PointWithId[points.length];
         for (int i = 0; i < this.points.length; i++) this.points[i] = new PointWithId(points[i], i);
 
-        this.checkedSlopes = new ArrayList[points.length];
+        this.checkedSlopes = new ArrayList< ArrayList<Double> >(points.length);
+        for (int i = 0; i < points.length; i++) this.checkedSlopes.add(null);
 
         for (int i = 0; i < points.length; i++) {
 
@@ -43,8 +41,6 @@ public class FastCollinearPoints {
             PointWithId[] sortedPoints = sortPointsToP(p.point.slopeOrder(), i+1, points.length-1);
             sortedPoints = cleanSortedList(p, sortedPoints);
             if (sortedPoints.length == 0) break;
-//            System.out.print(p.point); printSlopeList(p.point, sortedPoints); System.out.println();
-//            for (PointWithId pw : sortedPoints) System.out.print(pw.point); System.out.println();
 
             int pointsCount = 1;
             Double lastSlope = p.point.slopeTo(sortedPoints[0].point);
@@ -169,15 +165,15 @@ public class FastCollinearPoints {
 
     private void addSlopeToCheckedSlopes(double slope, ArrayList<Integer> whichPoints) {
         for (int i : whichPoints) {
-            if (this.checkedSlopes[i] == null) this.checkedSlopes[i] = new ArrayList<Double>();
-            this.checkedSlopes[i].add(slope);
+            if (this.checkedSlopes.get(i) == null) this.checkedSlopes.set(i, new ArrayList<Double>());
+            this.checkedSlopes.get(i).add(slope);
         }
     }
 
     private boolean pointHasSlope(int id, double slopeToCheck) {
-        if (this.checkedSlopes[id] == null) return false;
-        return ( (slopeToCheck == -0.0 || slopeToCheck == 0.0) ? this.checkedSlopes[id].contains(slopeToCheck) || this.checkedSlopes[id].contains(-slopeToCheck) :
-                                                                this.checkedSlopes[id].contains(slopeToCheck));
+        if (this.checkedSlopes.get(id) == null) return false;
+        return ( (slopeToCheck == -0.0 || slopeToCheck == 0.0) ? this.checkedSlopes.get(id).contains(slopeToCheck) || this.checkedSlopes.get(id).contains(-slopeToCheck) :
+                                                                this.checkedSlopes.get(id).contains(slopeToCheck));
     }
 
     private PointWithId[] cleanSortedList(PointWithId p, PointWithId[] sortedPoints) {
